@@ -139,7 +139,9 @@ final class ServiceMethod<T> {
             this.method = method;
             //获取方法上面的注解
             this.methodAnnotations = method.getAnnotations();
+            //获取参数类型
             this.parameterTypes = method.getGenericParameterTypes();
+            //获取参数中的注解
             this.parameterAnnotationsArray = method.getParameterAnnotations();
         }
 
@@ -155,7 +157,7 @@ final class ServiceMethod<T> {
             //创建响应解析器
             responseConverter = createResponseConverter();
 
-            //解析方法上面的注解
+            //解析方法上面的注解 get,post,delete eg..
             for (Annotation annotation : methodAnnotations) {
                 parseMethodAnnotation(annotation);
             }
@@ -211,6 +213,7 @@ final class ServiceMethod<T> {
         }
 
         private CallAdapter<?> createCallAdapter() {
+            //获取返回值类型
             Type returnType = method.getGenericReturnType();
             if (Utils.hasUnresolvableType(returnType)) {
                 throw methodError(

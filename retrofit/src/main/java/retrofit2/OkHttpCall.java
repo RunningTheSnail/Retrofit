@@ -194,6 +194,7 @@ final class OkHttpCall<T> implements Call<T> {
         return parseResponse(call.execute());
     }
 
+    //创建原始请求
     private okhttp3.Call createRawCall() throws IOException {
         Request request = serviceMethod.toRequest(args);
         okhttp3.Call call = serviceMethod.callFactory.newCall(request);

@@ -134,7 +134,7 @@ public final class Retrofit {
         if (validateEagerly) {
             eagerlyValidateMethods(service);
         }
-        //动态代理
+        //动态代理,类加载器,
         return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[]{service},
                 new InvocationHandler() {
                     private final Platform platform = Platform.get();
@@ -393,9 +393,13 @@ public final class Retrofit {
      * are optional.
      */
     public static final class Builder {
+        //平台
         private Platform platform;
+        //发起请求客户端工厂
         private okhttp3.Call.Factory callFactory;
+        //服务器地址
         private HttpUrl baseUrl;
+        //解析工厂
         private List<Converter.Factory> converterFactories = new ArrayList<>();
         private List<CallAdapter.Factory> adapterFactories = new ArrayList<>();
         private Executor callbackExecutor;
