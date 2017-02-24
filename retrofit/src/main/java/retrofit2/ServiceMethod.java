@@ -33,6 +33,8 @@ import java.util.regex.Pattern;
 
 /**
  * Adapts an invocation of an interface method into an HTTP call.
+ * <p>
+ * 缓存api上的各种注解配置  例如:@GET 存储get  不用每次都重新解析
  */
 final class ServiceMethod<T> {
     // Upper and lower characters, digits, underscores, and hyphens, starting with a character.
@@ -52,6 +54,9 @@ final class ServiceMethod<T> {
     private final boolean hasBody;
     private final boolean isFormEncoded;
     private final boolean isMultipart;
+
+
+    //参数解析器  和参数个数 一一对应
     private final ParameterHandler<?>[] parameterHandlers;
 
     ServiceMethod(Builder<T> builder) {
@@ -149,12 +154,14 @@ final class ServiceMethod<T> {
             callAdapter = createCallAdapter();
             //返回类型
             responseType = callAdapter.responseType();
+
+            //不能直接返回Response,需要用Call<Response>包装
             if (responseType == Response.class || responseType == okhttp3.Response.class) {
                 throw methodError("'"
                         + Utils.getRawType(responseType).getName()
                         + "' is not a valid response body type. Did you mean ResponseBody?");
             }
-            //创建响应解析器
+            //获取响应解析器
             responseConverter = createResponseConverter();
 
             //解析方法上面的注解 get,post,delete eg..
@@ -178,7 +185,9 @@ final class ServiceMethod<T> {
             }
 
             int parameterCount = parameterAnnotationsArray.length;
-            //参数拼接
+            //生成方法参数上面的解析器
+
+            //负责解析api 上面的参数,为生成Request做准备
             parameterHandlers = new ParameterHandler<?>[parameterCount];
             for (int p = 0; p < parameterCount; p++) {
                 //注解类型
@@ -222,6 +231,7 @@ final class ServiceMethod<T> {
             if (returnType == void.class) {
                 throw methodError("Service methods cannot return void.");
             }
+            //获取方法上面的注解
             Annotation[] annotations = method.getAnnotations();
             try {
                 return retrofit.callAdapter(returnType, annotations);

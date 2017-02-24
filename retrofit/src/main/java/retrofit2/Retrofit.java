@@ -58,7 +58,7 @@ import static retrofit2.Utils.checkNotNull;
  * @author Jake Wharton (jw@squareup.com)
  */
 public final class Retrofit {
-    //缓存service中的业务方法
+    //缓存service中的业务方法,所以一般Retrofit设置为单例
     private final Map<Method, ServiceMethod> serviceMethodCache = new LinkedHashMap<>();
     //发送请求采用的客户端,默认OkHttpClient
     private final okhttp3.Call.Factory callFactory;
@@ -76,6 +76,7 @@ public final class Retrofit {
              Executor callbackExecutor, boolean validateEagerly) {
         this.callFactory = callFactory;
         this.baseUrl = baseUrl;
+        //一旦生成Retrofit实例,解析器和适配器就不能修改了
         this.converterFactories = unmodifiableList(converterFactories); // Defensive copy at call site.
         this.adapterFactories = unmodifiableList(adapterFactories); // Defensive copy at call site.
         this.callbackExecutor = callbackExecutor;
@@ -136,14 +137,19 @@ public final class Retrofit {
         }
         //动态代理,类加载器,
         //代理模式:实际上都是持有原对象,在这个对象上操作的,添加了额外的操作
+        //Retrofit 并没有真正的持有原对象,只是想利用Method方法上面的注解
+        //静态代理和动态代理的区别  静态代理:当代理接口变化时，实现类和代理类都要变化，而动态代理不会,方法的调用都委托了InvocationHandler调用处理器
         return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[]{service},
                 new InvocationHandler() {
                     private final Platform platform = Platform.get();
 
+                    //spring中事务的管理貌似就是动态代理,可以根据Method 判断注解
                     @Override
                     public Object invoke(Object proxy, Method method, Object... args)
                             throws Throwable {
                         // If the method is a method from Object then defer to normal invocation.
+
+                        //判断调用的是不是Object继承下来的方法
                         if (method.getDeclaringClass() == Object.class) {
                             return method.invoke(this, args);
                         }
@@ -170,6 +176,7 @@ public final class Retrofit {
     ServiceMethod loadServiceMethod(Method method) {
         ServiceMethod result;
         synchronized (serviceMethodCache) {
+            //Method作为KEY , class 对象是单例的，所以Method也是单例的 不可变对象
             result = serviceMethodCache.get(method);
             if (result == null) {
                 result = new ServiceMethod.Builder(this, method).build();
@@ -414,6 +421,7 @@ public final class Retrofit {
         }
 
         public Builder() {
+            //获取当前是什么平台
             this(Platform.get());
         }
 
