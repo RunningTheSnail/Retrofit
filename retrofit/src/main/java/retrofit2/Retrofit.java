@@ -135,6 +135,7 @@ public final class Retrofit {
             eagerlyValidateMethods(service);
         }
         //动态代理,类加载器,
+        //代理模式:实际上都是持有原对象,在这个对象上操作的,添加了额外的操作
         return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[]{service},
                 new InvocationHandler() {
                     private final Platform platform = Platform.get();
