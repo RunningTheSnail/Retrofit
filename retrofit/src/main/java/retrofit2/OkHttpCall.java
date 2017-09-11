@@ -194,6 +194,7 @@ final class OkHttpCall<T> implements Call<T> {
         return parseResponse(call.execute());
     }
 
+    //感觉有点像装饰器模式,真正的功能都是OkHttpCall实现
     //创建原始请求
     private okhttp3.Call createRawCall() throws IOException {
         Request request = serviceMethod.toRequest(args);

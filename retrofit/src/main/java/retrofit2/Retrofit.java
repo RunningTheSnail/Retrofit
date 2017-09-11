@@ -57,6 +57,7 @@ import static retrofit2.Utils.checkNotNull;
  * @author Bob Lee (bob@squareup.com)
  * @author Jake Wharton (jw@squareup.com)
  */
+
 public final class Retrofit {
     //缓存service中的业务方法,所以一般Retrofit设置为单例
     private final Map<Method, ServiceMethod> serviceMethodCache = new LinkedHashMap<>();
@@ -383,6 +384,8 @@ public final class Retrofit {
 
         // Nothing matched. Resort to default converter which just calls toString().
         //noinspection unchecked
+
+        //普通的键值对解析
         return (Converter<T, String>) BuiltInConverters.ToStringConverter.INSTANCE;
     }
 
