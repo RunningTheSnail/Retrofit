@@ -679,6 +679,7 @@ final class ServiceMethod<T> {
                 return new ParameterHandler.Body<>(converter);
             }
 
+            //源码中不会解析非Retrofit的注解
             return null; // Not a Retrofit annotation.
         }
 
