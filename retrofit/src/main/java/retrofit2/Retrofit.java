@@ -588,11 +588,13 @@ public final class Retrofit {
             // Make a defensive copy of the adapters and add the default Call adapter.
 
             //先添加自定义的CallAdapter
+            //倒序
             List<CallAdapter.Factory> adapterFactories = new ArrayList<>(this.adapterFactories);
             adapterFactories.add(platform.defaultCallAdapterFactory(callbackExecutor));
 
             // Make a defensive copy of the converters.
             //先添加自定的解析器
+            //顺序
             List<Converter.Factory> converterFactories = new ArrayList<>(this.converterFactories);
 
             return new Retrofit(callFactory, baseUrl, converterFactories, adapterFactories,
